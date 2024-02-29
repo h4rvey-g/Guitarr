@@ -1,0 +1,13 @@
+# Bioinformatics data files
+*.fastq
+*.fastq.gz
+*.bam
+*.sam
+*.fa
+*.fasta
+*.gtf
+*.gff
+*.vcf
+*.bai
+*.fai
+example/hg19.chr1.10genes.gtf.idx
