@@ -10,4 +10,5 @@
 *.vcf
 *.bai
 *.fai
-example/hg19.chr1.10genes.gtf.idx
+data/*
+example/*
