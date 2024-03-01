@@ -45,10 +45,10 @@ getAlign() {
         --outSAMtype BAM SortedByCoordinate \
         --outBAMsortingThreadN 5 \
         --outFilterType BySJout \
-        --quantMode TranscriptomeSAM
+        --quantMode TranscriptomeSAM GeneCounts
 }
 export -f getAlign
-# date
 find ./data/02.Clean_data -name "*_1.fastq.gz" | parallel --progress --keep-order --line-buffer getAlign
+# find ./data/03.Align -name "*.bam" | parallel --progress --keep-order --line-buffer samtools sort -o {.}.sorted.bam
 # date
 /data0/apps/anaconda3/bin/multiqc ./data/03.Align -o ./data/03.Align/report
