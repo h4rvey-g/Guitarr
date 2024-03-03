@@ -6,9 +6,10 @@ if [ -z "$(ls -A ${index_dir})" ]; then
         --runMode genomeGenerate \
         --genomeDir ${index_dir} \
         --runThreadN 20 \
-        --genomeFastaFiles data/reference/GRCh38.fa \
-        --sjdbGTFfile data/reference/GRCh38.gtf \
-        --sjdbOverhang 99
+        --genomeFastaFiles data/reference/GRCh38_chr.fa \
+        --sjdbGTFfile data/reference/GRCh38_chr.gtf \
+        --sjdbOverhang 99 \
+        --limitGenomeGenerateRAM 276811584437
 fi
 index_dir_SIRV="./data/reference/STARindex_SIRV"
 mkdir -p $index_dir_SIRV
@@ -19,7 +20,8 @@ if [ -z "$(ls -A ${index_dir_SIRV})" ]; then
         --runThreadN 20 \
         --genomeFastaFiles data/reference/SIRV_combined.fa \
         --sjdbGTFfile data/reference/GRCh38_SIRV.gtf \
-        --sjdbOverhang 97
+        --sjdbOverhang 97 \
+        --limitGenomeGenerateRAM 276811584437
 fi
 mkdir -p ./data/03.Align
 getAlign() {
