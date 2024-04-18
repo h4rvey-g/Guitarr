@@ -11,7 +11,10 @@ get_quantification() {
     else
         gtf=./data/reference/GRCh38_chr.gtf
     fi
-    stringtie $bam -e -p 5 -G $gtf -o ./data/04.Tx_quantification/01.Stringtie/$(basename $bam .bam).gtf -A ./data/04.Tx_quantification/01.Stringtie/$(basename $bam .bam).tab -B
+    sample_name=$(basename $bam Aligned.sortedByCoord.out.bam)
+    output_dir="./data/04.Tx_quantification/01.Stringtie/$sample_name"
+    mkdir -p "$output_dir"
+    stringtie $bam -e -p 5 -G $gtf -o "$output_dir/$sample_name.gtf" -A "$output_dir/$sample_name.tab" -B
 }
 
 export -f get_quantification
