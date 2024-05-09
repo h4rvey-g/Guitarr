@@ -37,4 +37,4 @@ get_quantification() {
     stringtie $bam -e -p 5 -G $gtf -o "$output_dir/$sample_name.gtf" -A "$output_dir/$sample_name.tab" -B
 }
 export -f get_quantification
-find ./data/04.Tx_quantification/02.Stringtie_with_impute/bam_impute -name "*.bam" | parallel --progress --keep-order --line-buffer get_quantification
+find ./data/04.Tx_quantification/02.Stringtie_with_impute/bam_impute -name "*imputed.bam" | parallel --progress --keep-order --line-buffer get_quantification
