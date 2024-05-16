@@ -59,13 +59,13 @@ names(guitar) <- paste(combinations$cells, combinations$suffix, sep = "")
 guitar_combined <- list()
 guitar_combined$GS689 <- inner_join(guitar$GS689_1, guitar$GS689_2, by = "Transcript_ID", suffix = c(".1", ".2")) %>%
     inner_join(., guitar$GS689_3, by = "Transcript_ID", suffix = c("", ".3")) %>%
-    dplyr::rename(V1 = Transcript_Exp.1, V2 = Transcript_Exp.1, V3 = Transcript_Exp.2) %>%
+    dplyr::rename(V1 = Transcript_Exp, V2 = Transcript_Exp.1, V3 = Transcript_Exp.2) %>%
     # remove rows when V1, V2, V3 are all NA or 0
     filter(rowSums(select(., starts_with("V")) == 0) < 3)
 
 guitar_combined$PC3E <- inner_join(guitar$PC3E_1, guitar$PC3E_2, by = "Transcript_ID", suffix = c(".1", ".2")) %>%
     inner_join(., guitar$PC3E_3, by = "Transcript_ID", suffix = c("", ".3")) %>%
-    dplyr::rename(V1 = Transcript_Exp.1, V2 = Transcript_Exp.1, V3 = Transcript_Exp.2) %>%
+    dplyr::rename(V1 = Transcript_Exp, V2 = Transcript_Exp.1, V3 = Transcript_Exp.2) %>%
     filter(rowSums(select(., starts_with("V")) == 0) < 3)
 
 #####################
@@ -131,33 +131,54 @@ three_gen_list$PC3E <- three_gen_list$PC3E %>%
 #####################
 library(ggfortify)
 stringtie_tx_pca_data <- stringtie_tx %>%
-    map(~ select(.x, starts_with("V"))) %>%
-    imap(~ mutate(.x, cell = .y)) %>%
-    reduce(bind_rows)
+    # rename V1, V2, V3 to sublist name
+    modify_at("GS689", ~ dplyr::rename(.x, GS689_1 = V1, GS689_2 = V2, GS689_3 = V3)) %>%
+        modify_at("PC3E", ~ dplyr::rename(.x, PC3E_1 = V1, PC3E_2 = V2, PC3E_3 = V3)) %>%
+        # intersect two cells
+        reduce(inner_join, by = "Transcript_ID") %>%
+        select(starts_with("GS689"), starts_with("PC3E")) %>%
+        # slice(-which(apply(., 1, var) == 0)) %>%
+        as.data.frame() %>%
+        t() %>%
+        as.data.frame() %>%
+        rownames_to_column("cell") %>%
+        mutate(cell = str_extract(cell, "GS689|PC3E")) %>%
+        as_tibble()
+
 stringtie_tx_pca <- prcomp(stringtie_tx_pca_data %>% select(-cell), scale = TRUE)
-p <- autoplot(stringtie_tx_pca, data = stringtie_tx_pca_data, colour = "cell")
+p <- autoplot(stringtie_tx_pca, data = stringtie_tx_pca_data, colour = "cell", frame = TRUE)
 ggsave("data/07.PCA/stringtie_tx_pca.png", p, width = 10, height = 10, dpi = 300)
 
 stringtie_impute_pca_data <- stringtie_impute %>%
-    map(~ select(.x, starts_with("V"))) %>%
-    imap(~ mutate(.x, cell = .y)) %>%
-    reduce(bind_rows)
+    modify_at("GS689", ~ dplyr::rename(.x, GS689_1 = V1, GS689_2 = V2, GS689_3 = V3)) %>%
+        modify_at("PC3E", ~ dplyr::rename(.x, PC3E_1 = V1, PC3E_2 = V2, PC3E_3 = V3)) %>%
+        reduce(inner_join, by = "Transcript_ID") %>%
+        select(starts_with("GS689"), starts_with("PC3E")) %>%
+        as.data.frame() %>%
+        t() %>%
+        as.data.frame() %>%
+        rownames_to_column("cell") %>%
+        mutate(cell = str_extract(cell, "GS689|PC3E")) %>%
+        as_tibble()
+
 stringtie_impute_pca <- prcomp(stringtie_impute_pca_data %>% select(-cell), scale = TRUE)
-p <- autoplot(stringtie_impute_pca, data = stringtie_impute_pca_data, colour = "cell")
+p <- autoplot(stringtie_impute_pca, data = stringtie_impute_pca_data, colour = "cell", frame = TRUE)
 ggsave("data/07.PCA/stringtie_impute_pca.png", p, width = 10, height = 10, dpi = 300)
 
 guitar_combined_pca_data <- guitar_combined %>%
-    map(~ select(.x, starts_with("V"))) %>%
-    imap(~ mutate(.x, cell = .y)) %>%
-    reduce(bind_rows)
-guitar_combined_pca <- prcomp(guitar_combined_pca_data %>% select(-cell), scale = TRUE)
-p <- autoplot(guitar_combined_pca, data = guitar_combined_pca_data, colour = "cell")
-ggsave("data/07.PCA/guitar_combined_pca.png", p, width = 10, height = 10, dpi = 300)
+    modify_at("GS689", ~ dplyr::rename(.x, GS689_1 = V1, GS689_2 = V2, GS689_3 = V3)) %>%
+        modify_at("PC3E", ~ dplyr::rename(.x, PC3E_1 = V1, PC3E_2 = V2, PC3E_3 = V3)) %>%
+        reduce(inner_join, by = "Transcript_ID") %>%
+        select(starts_with("GS689"), starts_with("PC3E")) %>%
+        # filter out rows with zero variance
+        slice(-which(apply(., 1, var) == 0)) %>%
+        as.data.frame() %>%
+        t() %>%
+        as.data.frame() %>%
+        rownames_to_column("cell") %>%
+        mutate(cell = str_extract(cell, "GS689|PC3E")) %>%
+        as_tibble()
 
-three_gen_list_pca_data <- three_gen_list %>%
-    map(~ select(.x, starts_with("TPM"))) %>%
-    imap(~ mutate(.x, cell = .y)) %>%
-    reduce(bind_rows)
-three_gen_list_pca <- prcomp(three_gen_list_pca_data %>% select(-cell), scale = TRUE)
-p <- autoplot(three_gen_list_pca, data = three_gen_list_pca_data, colour = "cell")
-ggsave("data/07.PCA/three_gen_list_pca.png", p, width = 10, height = 10, dpi = 300)
+guitar_combined_pca <- prcomp(guitar_combined_pca_data %>% select(-cell), scale = TRUE)
+p <- autoplot(guitar_combined_pca, data = guitar_combined_pca_data, colour = "cell", frame = TRUE)
+ggsave("data/07.PCA/guitar_combined_pca.png", p, width = 10, height = 10, dpi = 300)
