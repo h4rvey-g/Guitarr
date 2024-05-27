@@ -16,6 +16,7 @@ done
 mkdir -p ./data/reference/3rd_gen
 wget "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE192955&format=file&file=GSE192955%5FPC3E%5FGS689%5FHEK293T%5F1D%5FcDNA%5FN2%5FR0%5Fabundance%2Eesp%2Etxt%2Egz" -O ./data/reference/3rd_gen/3rd_gen.txt.gz && gunzip ./data/reference/3rd_gen/3rd_gen.txt.gz
 wget "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE192955&format=file&file=GSE192955%5FPC3E%5F1D%5FcDNA%5FSIRV%5FN2%5FR0%5Fabundance%2Eesp%2Etxt%2Egz" -O ./data/reference/3rd_gen/SIRV.txt.gz && gunzip ./data/reference/3rd_gen/SIRV.txt.gz
+wget "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE192955&format=file&file=GSE192955%5FPC3E%5FGS689%5FHEK293T%5F1D%5FcDNA%5FN2%5FR0%5Fupdated%2Egtf%2Egz" -O ./data/reference/3rd_gen/3rd_gen.gtf.gz && gunzip ./data/reference/3rd_gen/3rd_gen.gtf.gz
 seqkit grep -r -p '^chr([0-9][0-9]?|X|Y)$' ./data/reference/GRCh38.fa >./data/reference/GRCh38_chr.fa
 seqkit concat ./data/reference/SIRV_Set1_Norm_Sequences_20210507/SIRV_isoforms_multi-fasta_170612a.fasta ./data/reference/GRCh38_chr.fa -o ./data/reference/SIRV_combined.fa -f
 samtools faidx ./data/reference/GRCh38_chr.fa
