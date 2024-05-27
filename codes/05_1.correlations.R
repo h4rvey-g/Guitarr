@@ -20,6 +20,8 @@ stringtie_tx <- list(
         rownames_to_column("Transcript_ID") %>%
         as_tibble())
 
+# remove rows when V1, V2, V3 are all NA or 0
+stringtie_tx <- map(stringtie_tx, ~ filter(.x, rowSums(select(.x, starts_with("V")) == 0) < 3))
 #####################
 # 02. stringtie with imputation
 #####################
